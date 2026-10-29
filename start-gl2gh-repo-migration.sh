@@ -252,12 +252,14 @@ process_rows() {
     fi
     popd >/dev/null
 
-    export TARGET_GH_ORG_ID="$TARGET_GH_ORG_ID"
+    export TARGET_GH_ORG_ID="${TARGET_GH_ORG_ID:-}"
     export TARGET_GH_ORG="$GH_ORG"
     if [[ -n "${TARGET_GH_ORG_ID:-}" ]]; then
       echo "[INFO] TARGET_GH_ORG_ID set: $TARGET_GH_ORG_ID" >>"$LOG_FILE"
     else
       echo "[ERROR] Fail: TARGET_GH_ORG_ID empty ${gitlab_group}/${project}"
+      echo "${gitlab_group},${project},${GH_ORG},${ARCHIVE_FILE_NAME},${GH_REPO_VISIBILITY},${MIGRATION_SOURCE_ID:-},${MIGRATION_ID:-}" >> "${MIGRATION_FAILURE_FILE}"
+      append_env_details "$gitlab_group" "$project" "${MIGRATION_ENVS_FILE}"
       FAIL=$((FAIL+1))
       continue
     fi
@@ -274,11 +276,13 @@ process_rows() {
     fi
     popd >/dev/null
 
-    export MIGRATION_SOURCE_ID="$MIGRATION_SOURCE_ID"
+    export MIGRATION_SOURCE_ID="${MIGRATION_SOURCE_ID:-}"
     if [[ -n "${MIGRATION_SOURCE_ID:-}" ]]; then
       echo "[INFO] MIGRATION_SOURCE_ID set: $MIGRATION_SOURCE_ID" >>"$LOG_FILE"
     else
       echo "[ERROR] Fail: MIGRATION_SOURCE_ID empty ${gitlab_group}/${project}"
+      echo "${gitlab_group},${project},${GH_ORG},${ARCHIVE_FILE_NAME},${GH_REPO_VISIBILITY},${MIGRATION_SOURCE_ID:-},${MIGRATION_ID:-}" >> "${MIGRATION_FAILURE_FILE}"
+      append_env_details "$gitlab_group" "$project" "${MIGRATION_ENVS_FILE}"
       FAIL=$((FAIL+1))
       continue
     fi
@@ -295,11 +299,13 @@ process_rows() {
     fi
     popd >/dev/null
 
-    export MIGRATION_ID="$MIGRATION_ID"
+    export MIGRATION_ID="${MIGRATION_ID:-}"
     if [[ -n "${MIGRATION_ID:-}" ]]; then
       echo "[INFO] MIGRATION_ID set: $MIGRATION_ID" >>"$LOG_FILE"
     else
       echo "[ERROR] Fail: MIGRATION_ID empty ${gitlab_group}/${project}"
+      echo "${gitlab_group},${project},${GH_ORG},${ARCHIVE_FILE_NAME},${GH_REPO_VISIBILITY},${MIGRATION_SOURCE_ID:-},${MIGRATION_ID:-}" >> "${MIGRATION_FAILURE_FILE}"
+      append_env_details "$gitlab_group" "$project" "${MIGRATION_ENVS_FILE}"
       FAIL=$((FAIL+1))
       continue
     fi

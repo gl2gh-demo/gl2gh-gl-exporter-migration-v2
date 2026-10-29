@@ -1030,7 +1030,7 @@ jobs:
           up_succ=$(get_last_num_for_key "$UP_OUT" "Success")
           up_fail=$(get_last_num_for_key "$UP_OUT" "Failed")
 
-          start_total=$(get_last_num_for_key "$START_OUT" "Total")
+          start_total=$(get_last_num_for_key "$START_OUT" "Total processed")
           start_started=$(get_last_num_for_key "$START_OUT" "started")
           start_fail=$(get_last_num_for_key "$START_OUT" "Failed")
 

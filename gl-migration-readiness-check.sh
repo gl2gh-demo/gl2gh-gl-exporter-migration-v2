@@ -44,6 +44,41 @@ urlencode() {
   printf '%s' "$1" | jq -Rr @uri
 }
 
+# Parse CSV file
+parse_csv_line() {
+    local line="$1"
+    local -a fields=()
+    local field=""
+    local in_quotes=false
+    local char
+    local i
+
+    for ((i=0; i<${#line}; i++)); do
+        char="${line:$i:1}"
+
+        if [[ "$char" == '"' ]]; then
+            if [[ "$in_quotes" == true ]]; then
+                if [[ "${line:$((i+1)):1}" == '"' ]]; then
+                    field+="$char"
+                    ((i++))
+                else
+                    in_quotes=false
+                fi
+            else
+                in_quotes=true
+            fi
+            elif [[ "$char" == ',' && "$in_quotes" == false ]]; then
+            fields+=("$field")
+            field=""
+        else
+            field+="$char"
+        fi
+    done
+
+    fields+=("$field")
+    printf '%s\n' "${fields[@]}"
+}
+
 # ----------------------------
 # Helper: Call GitLab API (single call) - used for project resolve only.
 # Returns: <http_code>|<response_body>
@@ -171,7 +206,7 @@ fetch_all_pages_json() {
 # Read CSV header and find indexes for Namespace & Project
 # ----------------------------
 header="$(head -n 1 "$INVENTORY_FILE" | tr -d '\r')"
-IFS=',' read -r -a cols <<< "$header"
+readarray -t cols < <(parse_csv_line "$header")
 
 # Find column index
 NS_IDX=""
@@ -216,7 +251,7 @@ echo
 # ----------------------------
 while IFS= read -r raw; do
   line="$(echo "$raw" | tr -d '\r')"      # remove CR if Windows file
-  IFS=',' read -r -a flds <<< "$line"       # simple CSV split
+  readarray -t flds < <(parse_csv_line "$line")   # quote-aware CSV split
 
   # Read namespace and project and clean them
   ns="$(echo "${flds[$NS_IDX]:-}" | xargs)"

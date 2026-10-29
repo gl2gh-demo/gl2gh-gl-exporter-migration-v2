@@ -14,7 +14,7 @@ import('@octokit/rest').then(({ Octokit }) => {
   import('@octokit/graphql').then(({ graphql }) => {
     const scriptPath = process.argv[2];
 
-    const auth = process.env.GITHUB_TOKEN || process.env.GH_PAT;
+    const auth = process.env.GH_PAT || process.env.GITHUB_TOKEN;
     if (!auth) {
       console.error('GH_PAT (or GITHUB_TOKEN) is not set');
       process.exit(1);
